@@ -1,7 +1,63 @@
-Is it possible that the only cases that I need to re-run are the case of tilt angle equals 45.00 deg. and 67.50 deg. This is possible because the case of 00.00 deg. is already alright and can be easily explained. So too is the case of tilt angle 90.00 deg., which is basically the simulated version of a setup whose experimental data exists.
+\documentclass[a4paper]{article}
 
-The data for tilt angle 22.50 deg. is alright, since we can easily explain the trend found in the data too. Perhaps I only need to re-run the cases where the freestream velocity is equal to 0.9 m/s and 1.0 m/s, since the root-mean-square amplitude of the total lift force is somehow bigger for the case of 22.50 deg. at 0.9 m/s and 1.0 m/s, compared to 00.00 deg.
+\usepackage[a4paper]{geometry}
 
-But the cases of 45.00 deg. and 67.50 deg. are hard to explain since the vibration amplitude is similar for both cases past the KVIV lower branch, although the contribution to the total lift that is in-phase with the cylinder displacement is far smaller for the case of 45.00 deg.
+\usepackage{setspace}
+\doublespacing
 
-For the most part, the asymmetry that was present in the cylinder displacement signal when 45.00 deg. is gone with the revised mesh. The revised mesh changes the distribution of cells in the plate domain of the simulation by deploying a higher concentration of cells nearby the circular cylinder neutral position.
+\usepackage[sumlimits,]{amsmath}
+
+\usepackage[]{SIunits}
+
+\begin{document}
+
+%The macros for freestream velocities
+\newcommand{\uon}{\unit{0.1}{\metre\per\second}}
+\newcommand{\utw}{\unit{0.2}{\metre\per\second}}
+\newcommand{\uth}{\unit{0.3}{\metre\per\second}}
+\newcommand{\ufo}{\unit{0.4}{\metre\per\second}}
+\newcommand{\ufi}{\unit{0.5}{\metre\per\second}}
+\newcommand{\usi}{\unit{0.6}{\metre\per\second}}
+\newcommand{\use}{\unit{0.7}{\metre\per\second}}
+\newcommand{\uei}{\unit{0.8}{\metre\per\second}}
+\newcommand{\uni}{\unit{0.9}{\metre\per\second}}
+\newcommand{\ute}{\unit{1.0}{\metre\per\second}}
+\newcommand{\uel}{\unit{1.1}{\metre\per\second}}
+\newcommand{\utv}{\unit{1.2}{\metre\per\second}}
+\newcommand{\utt}{\unit{1.3}{\metre\per\second}}
+
+%The macros for plate tilt angle
+\newcommand{\ptlt}{$\theta_{plate}$}
+\newcommand{\rze}{\unit{0}{\radian}}
+\newcommand{\ron}{\unit{\pi/8}{\radian}}
+\newcommand{\rtw}{\unit{\pi/4}{\radian}}
+\newcommand{\rth}{\unit{3\pi/8}{\radian}}
+\newcommand{\rfo}{\unit{\pi/2}{\radian}}
+
+%The macros for commonly used symbols
+\newcommand{\ypl}{$y^{+}$} %yPlus
+\newcommand{\ured}{$U^{*}$} %Reduced velocity
+
+\section*{Simulations to re-run and why}\label{whyRerun}
+
+Is it possible that the only cases that I need to re-run are the case of tilt angle equals \rtw{} and \rth{} This is possible because the case of \rze{} is already alright and can be easily explained. So too is the case of tilt angle \rfo{} which is basically the simulated version of a setup whose experimental data exists. However, it might be a good idea to re-run all \rth{} cases especially the high velocity cases (\uni{} to \utt). This is because only in the later stages of simulation did I found that the simulation results are different when I ran the same case on OpenFOAM 17.06. Usually I run the simulations using OpenFOAM 2.3.x, but one day, as I re-run the \ute{} case on OpenFOAM 17.06 on my laboratory Lenovo, the simulation produces a large vibration previously absent when ran on OpenFOAM 2.3.x. Then, I found that the case when \uni{} also yields a large and coherent vibration pattern.
+
+Is this just an artifact of continuing from another simulation, but with different boundary conditions? Well, I have attempted to induce stable and coherent vibrations from other freestream velocities as well, even at other tilt angles (for example when \rth), but failed. This suggests that when a stable and coherent vibration appears, it is purely due to the inherent solution of the governing equations by the solver. However, since it is dependent on the solver, using a different solver yields different results. The case when \uni{} for example, has been replicated on the server computer Tornado---even after decomposing the case into 16 parts, and running on a Courant number of about 5, I still manage to obtain similar results to the case ran on 4 cores using OpenFOAM 17.06 on the laboratory Lenovo machine.
+
+The data for tilt angle \ron{} is alright, since we can easily explain the trend found in the data too. Perhaps I only need to re-run the cases where the freestream velocity is equal to \uni{} and \ute{}, since the root-mean-square amplitude of the total lift force is somehow bigger for the case of \ron{} at \uni{} and \ute{}, compared to \rze{}.
+
+But the cases of \rtw{} and \rth{} are hard to explain since the vibration amplitude is similar for both cases past the KVIV lower branch, although the contribution to the total lift that is in-phase with the cylinder displacement is far smaller for the case of \rtw{}.
+
+For the most part, the asymmetry that was present in the cylinder displacement signal when \rtw{} is gone with the revised mesh. The revised mesh changes the distribution of cells in the plate domain of the simulation by deploying a higher concentration of cells nearby the circular cylinder neutral position.
+
+\section*{How to proceed: simulation scheduling}\label{howProceed}
+No re-runs are needed for the \rze{} case. I need to re-run the \ron{} case, with focus on freestream velocities \uni{} to \utt{}, using either OpenFOAM 4.1 or OpenFOAM 17.06.
+
+I need to re-run all \rtw{} cases since the asymmetrical displacement signal seems to be an artifact of meshing (for plates with tilt angle larger than \rtw{}, it seems that the mesh needs to have a concentrated band of mesh near the cylinder neutral position, in the plate domain). Preferably, the \rtw{} case should be run on OpenFOAM 2.3.x to elicit a low amplitude response, and possibly a low total lift amplitude too. This is so that when I re-run the \rth{} case, we can obtain a trend where the amplitude response at \rth{} is larger than \rtw{}. If this can take place, it will be easier to explain the trend as follows. The vibration when \rth{} is larger than \rtw{} because the plate tilt is closer to \rfo{}, hence is driven by a much stronger streamwise vortex.
+
+Needless to say, no re-runs are necessary for the case of \rfo{} since the results are already established and compares well to experimental studies by other researchers. Furthermore, I have elicited results for \rfo{} that is most similar to results available in the literature using the new mesh with a circular inflation layer around the cylinder, even at a \ypl{} mean of 5. However, it merits mentioning that this new \rfo{} simulation with a circular inflation layer around the cylinder and detached cylinder-plate domain produces a flow visualisation that is more pixelated compared to its predecessors. Is this an artifact of meshing, or is it the result of overclocking the Courant number to a maximum of close to 5 throughout the simulation, remains a question that merits further investigation, if time permits.
+
+\section*{Why the \rze{} simulation is easy to explain}
+Why does the \rze{} simulation results easy to explain, in addition to being a long-awaited result to amplifying the vibration amplitude greater than what was observed when \rfo{}? What differentiates the simulation setup for \rze{} from other tilt angles, in the sense that all other tilt angles except for \rfo{} produces only low vibrations as the reduced velocity \ured{} is increased past the lower branch of the Karman vortex-induced vibration KVIV.
+
+\end{document}
